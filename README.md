@@ -4,7 +4,7 @@ A modern, modular graphical interface for the [RePKG](https://github.com/notscuf
 
 ## Overview
 
-RePKG-UI provides an intuitive GUI wrapper for the powerful RePKG tool, making it easier to extract and manipulate UE4/UE5 pak files. This refactored version features improved architecture with separated concerns, modular structure, and professional code organization.
+RePKG-UI provides an intuitive GUI wrapper for the powerful RePKG tool, making it easier to extract and manipulate tex/pkg files. This refactored version features improved architecture with separated concerns, modular structure, and professional code organization.
 
 ## Features
 
