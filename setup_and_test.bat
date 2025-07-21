@@ -9,7 +9,7 @@ echo.
 :menu
 echo Please choose an option:
 echo [1] Test dependencies and files
-echo [2] Install missing dependencies
+echo [2] Install missing dependencies  
 echo [3] Test and auto-install if needed
 echo [4] Build executable
 echo [5] Exit
@@ -33,7 +33,7 @@ echo ==========================================
 call :check_dependencies
 call :check_files
 echo.
-echo Testing completed.
+echo [SUCCESS] Testing completed.
 pause
 goto :menu
 
@@ -62,7 +62,7 @@ if !deps_missing! equ 1 (
 )
 call :check_files
 echo.
-echo Setup completed.
+echo [SUCCESS] Setup completed.
 pause
 goto :menu
 
@@ -74,32 +74,68 @@ echo ==========================================
 call :check_dependencies
 call :check_files
 if !deps_missing! equ 1 (
-    echo Cannot build: Missing dependencies. Please install them first.
+    echo [ERROR] Cannot build: Missing dependencies. Please install them first.
     pause
     goto :menu
 )
 if !files_missing! equ 1 (
-    echo Cannot build: Missing required files.
+    echo [ERROR] Cannot build: Missing required files.
     pause
     goto :menu
 )
 
 echo.
-echo Building executable with PyInstaller...
+echo Cleaning previous builds...
+if exist "build" rmdir /s /q "build"
+if exist "dist" rmdir /s /q "dist"
+if exist "RePKG_UI.exe" del "RePKG_UI.exe"
+
+echo.
+echo Building single-file portable executable...
+echo This may take a few minutes...
 if exist "build.spec" (
     echo Using existing build.spec file...
-    pyinstaller build.spec
+    pyinstaller build.spec --clean --noconfirm
+) else if exist "repkg_ui.spec" (
+    echo Using repkg_ui.spec file...
+    pyinstaller repkg_ui.spec --clean --noconfirm
 ) else (
     echo Creating new spec and building...
-    pyinstaller --onefile --windowed --icon=icon.ico --name=RePKG_UI main.py
+    pyinstaller --onefile --windowed --icon=icon.ico --name=RePKG_UI main.py --clean --noconfirm
 )
 
-if errorlevel 1 (
-    echo Build failed!
+echo.
+echo Checking if build was successful...
+if exist "dist\RePKG_UI.exe" (
+    echo.
+    echo [SUCCESS] Build successful!
+    echo Moving executable to main directory...
+    move "dist\RePKG_UI.exe" "RePKG_UI.exe"
+    
+    echo.
+    echo File Information:
+    dir "RePKG_UI.exe" | findstr /C:"RePKG_UI.exe"
+    
+    echo.
+    echo Portable RePKG_UI.exe is ready!
+    echo File location: %cd%\RePKG_UI.exe
+    echo.
+    echo This executable is fully portable and can run on any Windows PC
+    echo without requiring Python or any additional installations!
 ) else (
-    echo Build completed successfully!
-    echo Executable created in dist/ folder
+    echo.
+    echo [ERROR] Build failed! Check the error messages above.
+    echo Common solutions:
+    echo 1. Install missing dependencies: pip install ttkbootstrap
+    echo 2. Make sure all files are present in the directory
+    echo 3. Check if antivirus is blocking PyInstaller
 )
+
+echo.
+echo Cleaning up temporary files...
+if exist "build" rmdir /s /q "build"
+if exist "dist" rmdir /s /q "dist"
+
 pause
 goto :menu
 
@@ -113,8 +149,8 @@ python -c "import ttkbootstrap; print('ttkbootstrap installed')" 2>nul || (
     set deps_missing=1
 )
 
-python -c "import PIL; print('Pillow PIL installed')" 2>nul || (
-    echo Pillow PIL not installed
+python -c "import PIL; print('Pillow installed')" 2>nul || (
+    echo Pillow not installed
     set deps_missing=1
 )
 
@@ -156,13 +192,21 @@ if exist "version_info.py" (echo version_info.py found) else (
     echo version_info.py missing - version info will not be included in executable
 )
 
-if exist "build.spec" (echo build.spec found) else (echo build.spec missing - will use default PyInstaller settings)
+if exist "build.spec" (echo build.spec found) else (
+    echo build.spec missing - will use default PyInstaller settings
+)
 
-if exist "config.ini" (echo config.ini found) else (echo config.ini missing - will be created on first run)
+if exist "config.ini" (echo config.ini found) else (
+    echo config.ini missing - will be created on first run
+)
 
-if exist "icon.ico" (echo icon.ico found) else (echo icon.ico missing - default icon will be used)
+if exist "icon.ico" (echo icon.ico found) else (
+    echo icon.ico missing - default icon will be used
+)
 
-if exist "RePKG.exe" (echo RePKG.exe found) else (echo RePKG.exe missing - please ensure RePKG tool is available)
+if exist "RePKG.exe" (echo RePKG.exe found) else (
+    echo RePKG.exe missing - please ensure RePKG tool is available
+)
 
 goto :eof
 
@@ -174,7 +218,7 @@ echo.
 echo [1/3] Installing ttkbootstrap...
 pip install ttkbootstrap
 if errorlevel 1 (
-    echo Failed to install ttkbootstrap
+    echo [ERROR] Failed to install ttkbootstrap
     goto :install_error
 )
 
@@ -182,7 +226,7 @@ echo.
 echo [2/3] Installing Pillow...
 pip install Pillow
 if errorlevel 1 (
-    echo Failed to install Pillow
+    echo [ERROR] Failed to install Pillow
     goto :install_error
 )
 
@@ -190,12 +234,12 @@ echo.
 echo [3/3] Installing PyInstaller...
 pip install pyinstaller
 if errorlevel 1 (
-    echo Failed to install PyInstaller
+    echo [ERROR] Failed to install PyInstaller
     goto :install_error
 )
 
 echo.
-echo All dependencies installed successfully!
+echo [SUCCESS] All dependencies installed successfully!
 echo.
 echo You can now:
 echo - Run: python main.py (to test the application)
@@ -205,10 +249,10 @@ goto :eof
 
 :install_error
 echo.
-echo Installation failed!
+echo [ERROR] Installation failed!
 echo Please try:
 echo - Running as administrator
-echo - Checking your internet connection
+echo - Checking your internet connection  
 echo - Using: pip install --user [package_name]
 goto :eof
 
