@@ -34,6 +34,10 @@ LOG_FILE = "logs.txt"
 ICON_FILE = "icon.ico"
 REPKG_EXE = "RePKG.exe"
 
+# Language Configuration
+DEFAULT_LANGUAGE = "en"
+AVAILABLE_LANGUAGES = ["en", "vi"]
+
 # UI Configuration
 AUTO_SAVE_DELAY = 500  # milliseconds
 CONSOLE_OUTPUT_HEIGHT = 20
@@ -46,6 +50,7 @@ DEFAULT_CONFIG = {
     "input": "",
     "output": "",
     "theme": "dark",  # Default to dark theme
+    "language": "en",  # Default language
     
     # Extraction options
     "tex": "false",

@@ -1,0 +1,65 @@
+{
+    "app_title": "RePKG UI - bởi tmk301",
+    "mode": "Chế độ:",
+    "input": "Đầu vào:",
+    "output": "Đầu ra:",
+    "file": "📁 Tệp",
+    "folder": "📂 Thư mục",
+    "browse": "📂 Duyệt",
+    "advanced_options": "Tùy chọn nâng cao",
+    "show_advanced": "Hiện tùy chọn nâng cao ▼",
+    "hide_advanced": "Ẩn tùy chọn nâng cao ▲",
+    "run": "▶ Chạy",
+    "reset": "Đặt lại",
+    "about": "Giới thiệu",
+    "console_output": "Kết quả Console",
+    "language": "Ngôn ngữ",
+    
+    "extract_mode": "giải nén",
+    "info_mode": "thông tin",
+    
+    "extract_options": {
+        "tex": "Chuyển đổi tất cả tệp TEX thành hình ảnh từ thư mục được chỉ định trong đầu vào",
+        "singledir": "Tất cả tệp được giải nén có nên được đặt trong một thư mục thay vì đường dẫn entry của chúng",
+        "usename": "Sử dụng tên từ project.json làm tên thư mục con dự án thay vì id",
+        "no_tex_convert": "Không chuyển đổi tệp TEX thành hình ảnh khi giải nén PKG",
+        "overwrite": "Ghi đè tất cả tệp hiện có",
+        "copyproject": "Sao chép project.json và preview.jpg từ bên cạnh PKG vào thư mục đầu ra"
+    },
+    
+    "info_options": {
+        "sort": "Sắp xếp entries tăng dần",
+        "printentries": "In entries trong packages",
+        "info_tex": "Dump thông tin về tất cả tệp TEX từ thư mục được chỉ định"
+    },
+    
+    "labels": {
+        "exts_only": "Chỉ giải nén tệp với phần mở rộng được chỉ định (phân cách bằng dấu phẩy \",\"):",
+        "exts_ignore": "Không giải nén tệp với phần mở rộng được chỉ định (phân cách bằng dấu phẩy \",\"):",
+        "sort_by": "Sắp xếp theo:",
+        "project_info": "Khóa để dump từ project.json (phân cách bằng dấu phẩy) (* cho tất cả):",
+        "title_filter": "Bộ lọc tiêu đề:",
+        "save_log": "Lưu kết quả vào tệp log"
+    },
+    
+    "dialogs": {
+        "about_title": "Giới thiệu RePKG UI",
+        "about_text": "RePKG UI v{version}\n\nGiao diện GUI hiện đại cho RePKG.\n\nRePKG gốc bởi notscuffed\nUI bởi {author}",
+        "reset_title": "Đặt lại cấu hình",
+        "reset_message": "Bạn có chắc chắn muốn đặt lại tất cả cài đặt về giá trị mặc định không?",
+        "missing_input_title": "Thiếu đầu vào",
+        "missing_input_message": "Vui lòng chọn tệp hoặc thư mục đầu vào trước khi chạy.",
+        "completion_title": "Hoàn thành",
+        "completion_message": "Lệnh RePKG đã hoàn thành.",
+        "error_title": "Lỗi",
+        "select_pkg_file": "Chọn tệp PKG hoặc TEX",
+        "select_folder": "Chọn thư mục",
+        "select_output_dir": "Chọn thư mục đầu ra"
+    },
+    
+    "sort_options": {
+        "name": "tên",
+        "extension": "phần mở rộng",
+        "size": "kích thước"
+    }
+}

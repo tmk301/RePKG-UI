@@ -9,7 +9,8 @@ import ttkbootstrap as ttk
 import webbrowser
 from tkinter import messagebox
 from ..constants import (APP_NAME, APP_AUTHOR, APP_REPO, ORIGINAL_REPO, 
-                        ABOUT_WINDOW_GEOMETRY)
+                        ABOUT_WINDOW_GEOMETRY, APP_VERSION)
+from ..i18n import _
 
 
 def show_about_dialog(parent):
@@ -20,7 +21,7 @@ def show_about_dialog(parent):
         parent: Parent window
     """
     about_win = ttk.Toplevel(parent)
-    about_win.title(f"About {APP_NAME}")
+    about_win.title(_("dialogs.about_title"))
     about_win.geometry(ABOUT_WINDOW_GEOMETRY)
     about_win.resizable(False, False)
     
@@ -31,6 +32,10 @@ def show_about_dialog(parent):
     # Title
     ttk.Label(content_frame, text=APP_NAME, 
              font=("TkDefaultFont", 14, "bold")).pack(pady=(0, 10))
+    
+    # About text
+    about_text = _("dialogs.about_text", version=APP_VERSION, author=APP_AUTHOR)
+    ttk.Label(content_frame, text=about_text, justify="center").pack(pady=(0, 10))
     
     # Created by section
     ttk.Label(content_frame, text=f"Created by {APP_AUTHOR}:").pack()
@@ -60,24 +65,25 @@ def show_reset_confirmation():
         bool: True if user confirms reset, False otherwise
     """
     return messagebox.askyesno(
-        "Reset Confirmation", 
-        "Are you sure you want to reset all settings to default values?\n\n"
-        "This action cannot be undone.",
+        _("dialogs.reset_title"), 
+        _("dialogs.reset_message"),
         icon="warning"
     )
 
 
 def show_missing_input_warning():
     """Show warning dialog for missing input."""
-    messagebox.showwarning("Missing Input", "Please select an input file or folder.")
+    messagebox.showwarning(_("dialogs.missing_input_title"), _("dialogs.missing_input_message"))
 
 
 def show_completion_message():
     """Show completion message after command execution."""
-    messagebox.showinfo("Done", "RePKG command has completed.")
+    messagebox.showinfo(_("dialogs.completion_title"), _("dialogs.completion_message"))
 
 
 def show_error_message(error_msg):
+    """Show error message dialog."""
+    messagebox.showerror(_("dialogs.error_title"), error_msg)
     """
     Show error message dialog.
     

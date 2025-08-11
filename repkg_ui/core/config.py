@@ -44,12 +44,23 @@ class ConfigManager:
         """Get the current theme setting."""
         return self.get_setting("theme", "dark")
     
+    def get_language(self):
+        """Get the current language setting."""
+        return self.get_setting("language", "en")
+    
     def set_theme(self, theme):
         """Set the theme setting and save immediately."""
         current_settings = dict(self.config["Settings"])
         current_settings["theme"] = theme
         self.update_config(current_settings)
         self.save_config_immediately()  # Save immediately for theme changes
+    
+    def set_language(self, language):
+        """Set the language setting and save immediately."""
+        current_settings = dict(self.config["Settings"])
+        current_settings["language"] = language
+        self.update_config(current_settings)
+        self.save_config_immediately()  # Save immediately for language changes
     
     def save_config_immediately(self):
         """Save configuration to file immediately."""

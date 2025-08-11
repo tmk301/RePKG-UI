@@ -9,6 +9,7 @@ import os
 import sys
 from tkinter import filedialog
 from ..constants import FILE_TYPES, ICON_FILE, REPKG_EXE
+from ..i18n import _
 
 
 def get_resource_path(filename):
@@ -41,16 +42,16 @@ def get_icon_path():
 def select_pkg_file():
     """Open file dialog to select PKG or TEX files for input."""
     return filedialog.askopenfilename(
-        title="Select a PKG or TEX file",
+        title=_("dialogs.select_pkg_file"),
         filetypes=FILE_TYPES
     )
 
 
 def select_input_folder():
     """Open folder dialog to select directory for input."""
-    return filedialog.askdirectory(title="Select a folder")
+    return filedialog.askdirectory(title=_("dialogs.select_folder"))
 
 
 def select_output_folder():
     """Open folder dialog to select output directory."""
-    return filedialog.askdirectory(title="Select output directory")
+    return filedialog.askdirectory(title=_("dialogs.select_output_dir"))
