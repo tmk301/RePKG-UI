@@ -12,6 +12,11 @@
     "run": "▶ Chạy",
     "reset": "Đặt lại",
     "about": "Giới thiệu",
+    "close": "Đóng",
+    "settings": "Cài đặt",
+    "theme": "Giao diện",
+    "dark_theme": "Giao diện tối",
+    "light_theme": "Giao diện sáng",
     "console_output": "Kết quả Console",
     "language": "Ngôn ngữ",
     

@@ -6,6 +6,7 @@ Main application window with all UI components and event handlers.
 """
 
 import ttkbootstrap as ttk
+import tkinter as tk
 import os
 
 from ..constants import (WINDOW_GEOMETRY, WINDOW_THEME, APP_TITLE, EXTRACT_OPTIONS, 
@@ -106,6 +107,17 @@ class MainWindow:
         self._create_action_buttons()
         self._create_output_console()
     
+    def _calculate_button_width(self, text, min_width=8, padding=3):
+        """Calculate optimal button width based on text content."""
+        # More accurate character width estimation for different languages
+        # Vietnamese and English have different character densities
+        current_lang = language_manager.current_language
+        char_width = 0.8 if current_lang == "vi" else 0.7  # Vietnamese needs more space
+        
+        # Calculate width based on text length + padding
+        text_width = len(text) * char_width + padding
+        return max(min_width, int(text_width) + 1)  # +1 for safety margin
+    
     def _create_mode_selection(self):
         """Create mode selection row."""
         # Mode label and combobox
@@ -125,34 +137,18 @@ class MainWindow:
         else:
             self.combo_mode.set(translate("info_mode"))
         
-        # Right side buttons
+        # Right side settings button
         right_frame = ttk.Frame(self.window)
         right_frame.grid(row=0, column=2, pady=8, padx=(0, 15), sticky="e")
         
-        # Language toggle button
-        current_lang = language_manager.current_language
-        lang_icon = "🇺🇸" if current_lang == "en" else "🇻🇳"
-        self.btn_language = ttk.Button(right_frame, text=lang_icon, 
-                                      command=self._toggle_language, 
+        # Settings button
+        self.btn_settings = ttk.Button(right_frame, text="⚙️", 
+                                      command=self._show_settings_menu, 
                                       style="outline.TButton", width=4)
-        self.btn_language.pack(side="left", padx=(0, 5))
+        self.btn_settings.pack(side="left")
         
-        # Theme toggle button
-        theme_icon = THEME_ICONS.get("light" if self.current_theme == "dark" else "dark", "🌙")
-        self.btn_theme = ttk.Button(right_frame, text=theme_icon, 
-                                   command=self._toggle_theme, 
-                                   style="outline.TButton", width=4)
-        self.btn_theme.pack(side="left", padx=(0, 5))
-        
-        self.btn_reset = ttk.Button(right_frame, text=translate("reset"), 
-                                   command=self._reset_to_default, 
-                                   style="warning.TButton", width=8)
-        self.btn_reset.pack(side="left", padx=(0, 5))
-        
-        self.btn_about = ttk.Button(right_frame, text=translate("about"), 
-                                   command=self._show_about, 
-                                   style="info.TButton", width=8)
-        self.btn_about.pack(side="left")
+        # Configure grid column weights
+        self.window.grid_columnconfigure(1, weight=1)
     
     def _create_input_output_section(self):
         """Create input and output selection section."""
@@ -167,11 +163,20 @@ class MainWindow:
         self.input_buttons_frame = ttk.Frame(self.window)
         self.input_buttons_frame.grid(row=1, column=2, pady=8, padx=(0, 15))
 
-        self.btn_input_file = ttk.Button(self.input_buttons_frame, text=translate("file"), command=self._select_file,
-                                         style="outline.TButton", width=10)
+        # Auto-size buttons based on text content
+        file_text = translate("file")
+        folder_text = translate("folder")
+        browse_text = translate("browse")
+        
+        file_width = self._calculate_button_width(file_text, min_width=10)
+        folder_width = self._calculate_button_width(folder_text, min_width=10)
+        browse_width = self._calculate_button_width(browse_text, min_width=10)
+
+        self.btn_input_file = ttk.Button(self.input_buttons_frame, text=file_text, command=self._select_file,
+                                         style="outline.TButton", width=file_width)
         self.btn_input_file.pack(side="top", pady=(0, 2))
-        self.btn_input_folder = ttk.Button(self.input_buttons_frame, text=translate("folder"), command=self._select_folder,
-                                           style="outline.TButton", width=10)
+        self.btn_input_folder = ttk.Button(self.input_buttons_frame, text=folder_text, command=self._select_folder,
+                                           style="outline.TButton", width=folder_width)
         self.btn_input_folder.pack(side="top")
 
         # Output row
@@ -181,9 +186,9 @@ class MainWindow:
         self.entry_output = ttk.Entry(self.window, width=50, textvariable=self.var_output)
         self.entry_output.grid(row=2, column=1, pady=8, sticky="ew", padx=(0, 10))
 
-        self.btn_browse_output = ttk.Button(self.window, text=translate("browse"),
+        self.btn_browse_output = ttk.Button(self.window, text=browse_text,
                                             command=self._select_output_folder,
-                                            style="outline.TButton", width=10)
+                                            style="outline.TButton", width=browse_width)
         self.btn_browse_output.grid(row=2, column=2, pady=8, padx=(0, 15))
     
     def _create_advanced_options(self):
@@ -215,13 +220,20 @@ class MainWindow:
         center_frame = ttk.Frame(button_frame)
         center_frame.pack()
         
-        self.btn_advanced = ttk.Button(center_frame, text=translate("show_advanced"),
+        # Auto-size buttons based on text content
+        show_advanced_text = translate("show_advanced")
+        run_text = translate("run")
+        
+        advanced_width = self._calculate_button_width(show_advanced_text, min_width=25)
+        run_width = self._calculate_button_width(run_text, min_width=20)
+        
+        self.btn_advanced = ttk.Button(center_frame, text=show_advanced_text,
                                       command=self._toggle_advanced, 
-                                      style="info.TButton", width=25)
+                                      style="info.TButton", width=advanced_width)
         self.btn_advanced.pack(side="left", padx=(0, 10))
         
-        ttk.Button(center_frame, text=translate("run"), command=self._run_repkg,
-                  style="success.TButton", width=20).pack(side="left")
+        ttk.Button(center_frame, text=run_text, command=self._run_repkg,
+                  style="success.TButton", width=run_width).pack(side="left")
     
     def _create_output_console(self):
         """Create output console section."""
@@ -419,10 +431,14 @@ class MainWindow:
         """Toggle advanced options visibility."""
         if self.advanced_frame.winfo_ismapped():
             self.advanced_frame.grid_remove()
-            self.btn_advanced.config(text=translate("show_advanced"))
+            text = translate("show_advanced")
         else:
             self.advanced_frame.grid()
-            self.btn_advanced.config(text=translate("hide_advanced"))
+            text = translate("hide_advanced")
+        
+        # Update button with auto-sizing
+        width = self._calculate_button_width(text, min_width=25)
+        self.btn_advanced.config(text=text, width=width)
     
     def _select_file(self):
         """Handle file selection."""
@@ -476,29 +492,153 @@ class MainWindow:
         self.var_title_filter.set(config_manager.get_setting("title_filter"))
         self.var_log.set(config_manager.get_bool_setting("log"))
     
+    def _show_settings_menu(self):
+        """Show settings dialog."""
+        self._show_settings_dialog()
+    
     def _show_about(self):
         """Show about dialog."""
         show_about_dialog(self.window)
     
-    def _toggle_theme(self):
-        """Toggle between light and dark themes."""
-        # Switch theme
-        new_theme = "light" if self.current_theme == "dark" else "dark"
-        self.current_theme = new_theme
+    def _show_settings_dialog(self):
+        """Show settings popup dialog."""
+        # Create popup dialog (Toplevel without window manager decorations)
+        popup = ttk.Toplevel(self.window)
+        popup.overrideredirect(True)  # Remove window decorations
+        popup.configure(background='gray20')
         
-        # Save theme preference
-        config_manager.set_theme(new_theme)
+        # Main frame with padding
+        main_frame = ttk.Frame(popup, padding=15, style="Card.TFrame")
+        main_frame.pack(fill="both", expand=True)
         
-        # Update button icon
-        new_icon = THEME_ICONS.get("light" if new_theme == "dark" else "dark", "🌙")
-        self.btn_theme.config(text=new_icon)
+        # Title
+        title_label = ttk.Label(main_frame, text=translate("settings"), 
+                               font=("TkDefaultFont", 12, "bold"))
+        title_label.pack(anchor="w", pady=(0, 10))
         
-        # Apply new theme
-        theme_name = THEMES.get(new_theme, WINDOW_THEME)
-        self.style.theme_use(theme_name)
+        # Language section
+        lang_label = ttk.Label(main_frame, text=translate("language"), 
+                              font=("TkDefaultFont", 10, "bold"))
+        lang_label.pack(anchor="w", pady=(0, 5))
         
-        # Reconfigure custom styles for new theme
-        configure_custom_styles(self.style, theme_name)
+        # Language buttons
+        lang_frame = ttk.Frame(main_frame)
+        lang_frame.pack(fill="x", pady=(0, 10))
+        
+        current_lang = language_manager.current_language
+        available_langs = language_manager.get_available_languages()
+        
+        for lang_code, lang_name in available_langs.items():
+            style = "success.TButton" if lang_code == current_lang else "outline.TButton"
+            width = self._calculate_button_width(lang_name, min_width=8)
+            btn = ttk.Button(lang_frame, text=lang_name, style=style, width=width,
+                           command=lambda code=lang_code: self._apply_setting_change(popup, lambda: self._change_language(code)))
+            btn.pack(side="left", padx=(0, 8))
+        
+        # Theme section
+        theme_label = ttk.Label(main_frame, text=translate("theme"), 
+                               font=("TkDefaultFont", 10, "bold"))
+        theme_label.pack(anchor="w", pady=(0, 5))
+        
+        # Theme buttons
+        theme_frame = ttk.Frame(main_frame)
+        theme_frame.pack(fill="x", pady=(0, 10))
+        
+        theme_options = [("dark", translate("dark_theme")), ("light", translate("light_theme"))]
+        for theme_code, theme_name in theme_options:
+            style = "success.TButton" if theme_code == self.current_theme else "outline.TButton"
+            width = self._calculate_button_width(theme_name, min_width=8)
+            btn = ttk.Button(theme_frame, text=theme_name, style=style, width=width,
+                           command=lambda code=theme_code: self._apply_setting_change(popup, lambda: self._change_theme(code)))
+            btn.pack(side="left", padx=(0, 8))
+        
+        # Action buttons
+        action_frame = ttk.Frame(main_frame)
+        action_frame.pack(fill="x", pady=(5, 0))
+        
+        # Reset button
+        reset_text = translate("reset")
+        reset_width = self._calculate_button_width(reset_text, min_width=8)
+        reset_btn = ttk.Button(action_frame, text=reset_text, 
+                              style="warning.TButton", width=reset_width,
+                              command=lambda: self._apply_setting_change(popup, self._reset_to_default))
+        reset_btn.pack(side="left", padx=(0, 8))
+        
+        # About button  
+        about_text = translate("about")
+        about_width = self._calculate_button_width(about_text, min_width=8)
+        about_btn = ttk.Button(action_frame, text=about_text, 
+                              style="info.TButton", width=about_width,
+                              command=self._show_about)
+        about_btn.pack(side="left", padx=(0, 8))
+        
+        # Close button
+        close_btn = ttk.Button(action_frame, text="✕", 
+                              style="secondary.TButton", width=3,
+                              command=popup.destroy)
+        close_btn.pack(side="right")
+        
+        # Position popup at center of main window
+        self._center_popup(popup)
+        
+        # Make popup modal but allow interaction with about dialog
+        popup.transient(self.window)
+        popup.focus_set()
+        
+        # Close popup when clicking outside
+        self._setup_popup_close_handler(popup)
+    
+    def _apply_setting_change(self, popup, action):
+        """Apply setting change and close popup."""
+        action()
+        popup.destroy()
+    
+    def _center_popup(self, popup):
+        """Center popup on main window."""
+        popup.update_idletasks()
+        
+        try:
+            # Get main window position and size
+            main_x = self.window.winfo_rootx()
+            main_y = self.window.winfo_rooty()
+            main_width = self.window.winfo_width()
+            main_height = self.window.winfo_height()
+            
+            # Get popup size
+            popup_width = popup.winfo_width()
+            popup_height = popup.winfo_height()
+            
+            # Calculate center position
+            popup_x = main_x + (main_width - popup_width) // 2
+            popup_y = main_y + (main_height - popup_height) // 2
+            
+            popup.geometry(f"+{popup_x}+{popup_y}")
+        except:
+            # Fallback to screen center
+            screen_width = popup.winfo_screenwidth()
+            screen_height = popup.winfo_screenheight()
+            popup_x = (screen_width - popup.winfo_width()) // 2
+            popup_y = (screen_height - popup.winfo_height()) // 2
+            popup.geometry(f"+{popup_x}+{popup_y}")
+    
+    def _setup_popup_close_handler(self, popup):
+        """Setup handler to close popup when clicking outside."""
+        def close_popup(event=None):
+            try:
+                # Check if click is outside popup
+                x, y = popup.winfo_pointerx(), popup.winfo_pointery()
+                popup_x1 = popup.winfo_rootx()
+                popup_y1 = popup.winfo_rooty()
+                popup_x2 = popup_x1 + popup.winfo_width()
+                popup_y2 = popup_y1 + popup.winfo_height()
+                
+                if not (popup_x1 <= x <= popup_x2 and popup_y1 <= y <= popup_y2):
+                    popup.destroy()
+            except:
+                pass
+        
+        # Bind click events (with small delay to avoid immediate close)
+        self.window.after(100, lambda: self.window.bind("<Button-1>", close_popup, add=True))
     
     def _run_repkg(self):
         """Execute RePKG command."""
@@ -552,45 +692,16 @@ class MainWindow:
         else:
             show_error_message(error or "Command failed")
     
-    def _toggle_language(self):
-        """Toggle between available languages."""
-        current_lang = language_manager.current_language
-        new_lang = "vi" if current_lang == "en" else "en"
-        
-        # Update language manager
-        language_manager.set_language(new_lang)
-        
-        # Save language preference
-        config_manager.set_language(new_lang)
-        
-        # Update UI with new language
-        self._update_ui_language()
-    
     def _update_ui_language(self):
         """Update all UI text with current language."""
         # Update window title
         self.window.title(translate("app_title"))
         
-        # Update language button icon
-        current_lang = language_manager.current_language
-        lang_icon = "🇺🇸" if current_lang == "en" else "🇻🇳"
-        self.btn_language.config(text=lang_icon)
-        
-        # Update button texts
-        self.btn_reset.config(text=translate("reset"))
-        self.btn_about.config(text=translate("about"))
-        self.btn_input_file.config(text=translate("file"))
-        self.btn_input_folder.config(text=translate("folder"))
-        self.btn_browse_output.config(text=translate("browse"))
+        # Update button texts with auto-sizing
+        self._update_button_sizes()
         
         # Update advanced frame text
         self.advanced_frame.config(text=translate("advanced_options"))
-        
-        # Update advanced button text
-        if self.advanced_frame.winfo_ismapped():
-            self.btn_advanced.config(text=translate("hide_advanced"))
-        else:
-            self.btn_advanced.config(text=translate("show_advanced"))
         
         # Update mode combobox values
         mode_values = [translate("extract_mode"), translate("info_mode")]
@@ -606,6 +717,48 @@ class MainWindow:
         
         # Re-create advanced options to update labels
         self._update_ui()
+    
+    def _change_language(self, language_code):
+        """Change language via menu."""
+        language_manager.set_language(language_code)
+        config_manager.set_language(language_code)
+        self._update_ui_language()
+    
+    def _change_theme(self, theme):
+        """Change theme via menu."""
+        self.current_theme = theme
+        config_manager.set_theme(theme)
+        
+        # Apply new theme
+        theme_name = THEMES.get(theme, WINDOW_THEME)
+        self.style.theme_use(theme_name)
+        
+        # Reconfigure custom styles for new theme
+        configure_custom_styles(self.style, theme_name)
+    
+    def _update_button_sizes(self):
+        """Update all button sizes based on current language."""
+        # Update input/output buttons
+        file_text = translate("file")
+        folder_text = translate("folder") 
+        browse_text = translate("browse")
+        
+        file_width = self._calculate_button_width(file_text, min_width=10)
+        folder_width = self._calculate_button_width(folder_text, min_width=10)
+        browse_width = self._calculate_button_width(browse_text, min_width=10)
+        
+        self.btn_input_file.config(text=file_text, width=file_width)
+        self.btn_input_folder.config(text=folder_text, width=folder_width)
+        self.btn_browse_output.config(text=browse_text, width=browse_width)
+        
+        # Update advanced button
+        if self.advanced_frame.winfo_ismapped():
+            advanced_text = translate("hide_advanced")
+        else:
+            advanced_text = translate("show_advanced")
+        
+        advanced_width = self._calculate_button_width(advanced_text, min_width=25)
+        self.btn_advanced.config(text=advanced_text, width=advanced_width)
     
     def run(self):
         """Start the application."""
