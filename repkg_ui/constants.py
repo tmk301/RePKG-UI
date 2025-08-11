@@ -59,8 +59,8 @@ DEFAULT_CONFIG = {
     
     # Info mode options
     "sortby": "name",
-    "sort": "false",
-    "printentries": "false",
+    "sort": "true",
+    "printentries": "true",
     "info_tex": "false",
     "projectinfo": "",
     "title_filter": ""
@@ -83,7 +83,7 @@ EXTRACT_OPTIONS = [
 
 # Info Mode Options
 INFO_OPTIONS = [
-    ("sort", "Sort entries A-Z"),
+    ("sort", "Sort entries ascending"),
     ("printentries", "Print entries in packages"),
     ("info_tex", "Dump info about all TEX files from specified directory")
 ]

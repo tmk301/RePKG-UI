@@ -137,28 +137,31 @@ class MainWindow:
         # Input row
         ttk.Label(self.window, text="Input:", anchor="w").grid(
             row=1, column=0, sticky="w", pady=8, padx=(10, 5))
-        
+
         self.entry_input = ttk.Entry(self.window, width=50, textvariable=self.var_input)
         self.entry_input.grid(row=1, column=1, pady=8, sticky="ew", padx=(0, 10))
-        
-        input_buttons_frame = ttk.Frame(self.window)
-        input_buttons_frame.grid(row=1, column=2, pady=8, padx=(0, 15))
-        
-        ttk.Button(input_buttons_frame, text="📁 File", command=self._select_file,
-                  style="outline.TButton", width=10).pack(side="top", pady=(0, 2))
-        ttk.Button(input_buttons_frame, text="📂 Folder", command=self._select_folder,
-                  style="outline.TButton", width=10).pack(side="top")
-        
+
+        # Store frame and buttons as attributes so we can hide folder button in info mode
+        self.input_buttons_frame = ttk.Frame(self.window)
+        self.input_buttons_frame.grid(row=1, column=2, pady=8, padx=(0, 15))
+
+        self.btn_input_file = ttk.Button(self.input_buttons_frame, text="📁 File", command=self._select_file,
+                                         style="outline.TButton", width=10)
+        self.btn_input_file.pack(side="top", pady=(0, 2))
+        self.btn_input_folder = ttk.Button(self.input_buttons_frame, text="📂 Folder", command=self._select_folder,
+                                           style="outline.TButton", width=10)
+        self.btn_input_folder.pack(side="top")
+
         # Output row
         self.label_output = ttk.Label(self.window, text="Output:", anchor="w")
         self.label_output.grid(row=2, column=0, sticky="w", pady=8, padx=(10, 5))
-        
+
         self.entry_output = ttk.Entry(self.window, width=50, textvariable=self.var_output)
         self.entry_output.grid(row=2, column=1, pady=8, sticky="ew", padx=(0, 10))
-        
-        self.btn_browse_output = ttk.Button(self.window, text="📂 Browse", 
-                                           command=self._select_output_folder,
-                                           style="outline.TButton", width=10)
+
+        self.btn_browse_output = ttk.Button(self.window, text="📂 Browse",
+                                            command=self._select_output_folder,
+                                            style="outline.TButton", width=10)
         self.btn_browse_output.grid(row=2, column=2, pady=8, padx=(0, 15))
     
     def _create_advanced_options(self):
@@ -240,7 +243,7 @@ class MainWindow:
             "mode": self.var_mode.get(),
             "input": self.var_input.get().strip(),
             "output": self.var_output.get().strip(),
-            "theme": self.current_theme,  # Include theme in auto-save
+            "theme": self.current_theme,
             "log": str(self.var_log.get()).lower(),
             "tex": str(self.var_tex.get()).lower(),
             "singledir": str(self.var_singledir.get()).lower(),
@@ -263,11 +266,33 @@ class MainWindow:
         """Update UI based on current mode."""
         mode = self.var_mode.get()
         
-        # Enable/disable output controls based on mode
-        state = "normal" if mode == "extract" else "disabled"
-        self.label_output.config(state=state)
-        self.entry_output.config(state=state)
-        self.btn_browse_output.config(state=state)
+        # Show/hide output controls & folder selection depending on mode
+        if mode == "extract":
+            # Re-show output widgets if they were hidden
+            self.label_output.grid()
+            self.entry_output.grid()
+            self.btn_browse_output.grid()
+            # Show folder button
+            if hasattr(self, 'btn_input_folder'):
+                self.btn_input_folder.pack(side="top")
+            # Ensure advanced frame sits below output
+            try:
+                self.advanced_frame.grid_configure(row=3)
+            except Exception:
+                pass
+        else:  # info mode
+            # Hide output widgets entirely instead of disabling
+            self.label_output.grid_remove()
+            self.entry_output.grid_remove()
+            self.btn_browse_output.grid_remove()
+            # Hide folder selection button (only allow file picking)
+            if hasattr(self, 'btn_input_folder'):
+                self.btn_input_folder.pack_forget()
+            # Move advanced frame up to fill gap
+            try:
+                self.advanced_frame.grid_configure(row=2)
+            except Exception:
+                pass
         
         # Clear existing advanced options
         for widget in self.advanced_frame.winfo_children():
